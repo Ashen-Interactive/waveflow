@@ -1,0 +1,5 @@
+# map.yaml
+adjacency_rules:
+  ground: ["ground", "roof", "wall"]
+  roof:   ["ground", "roof", "wall"]
+  wall:   ["ground", "roof", "wall"]
