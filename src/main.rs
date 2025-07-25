@@ -1,65 +1,69 @@
-use std::{fs, path::PathBuf};
-use clap::Parser;
-use anyhow::Result;
-use image::RgbaImage;
+use std::fs;
+use clap::{Arg, Command};
+use image::{DynamicImage, GenericImage, GenericImageView, RgbaImage};
 
-mod config;
-mod map;
-
-use config::MapConfig;
-use map::{generate_map_1d, generate_map_2d};
-
-#[derive(Parser, Debug)]
-#[command(name = "waveflow", version = "0.1.0", about = "1D WFC Map Concatenator")]
-struct Args {
-    /// Path to map.yaml
-    #[arg(long)]
-    map: PathBuf,
-
-    #[arg(long)]
-    dimensions: Option<String>,
-
-    /// Directory holding tile PNGs (named `<name>.png`)
-    #[arg(long)]
-    tiles_dir: PathBuf,
-
-    /// Number of tiles in the output (length of the 1D map)
-    #[arg(long, default_value_t = 4)]
-    length: usize,
-
-    /// Output PNG file
-    #[arg(long)]
-    out: PathBuf,
+mod cli {
+    pub mod cli;
+}
+mod generators {
+    pub mod map;
+    pub mod tile;
+}
+mod rules {
+    pub mod sector;
+    pub mod tile;
+    pub mod wfc;
 }
 
-fn main() -> Result<()> {
-    let args = Args::parse();
+use cli::cli::*;
+use rules::tile::*;
+use rules::wfc::*;
 
-    // Load adjacency rules
-    let cfg = MapConfig::load(&args.map)?;
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // 1. Decide what the user wants to make
+    // 2. Generate the map firstly as an array of tiles (struct Tile(f64)) decided by maps.yaml (adjecensy rules) 
+    // 3. Generate each tile as a section
 
-    // Gather all `.png` tile paths
-    let mut tile_paths = Vec::new();
-    for entry in fs::read_dir(&args.tiles_dir)? {
-        let p = entry?.path();
-        if p.extension().and_then(|s| s.to_str()) == Some("png") {
-            tile_paths.push(p);
-        }
+    let matches = Command::new("waveflow")
+        .version("0.1.0")
+        .author("Neo Mannskär")
+        .about("A tool for generating 2D game top-down maps through wave function collapse")
+        .arg(
+            Arg::new("input")
+                .help("Input .yaml file")
+                .required(true)
+                .index(1),
+        )
+        .arg(
+            Arg::new("output")
+                .help("Output file generated map")
+                .required(true)
+                .index(2),
+        )
+        .arg(
+            Arg::new("verbose")
+                .short('v')
+                .long("verbose")
+                .help("Print verbose output")
+                .action(clap::ArgAction::SetTrue),
+        )
+        .get_matches();
+
+    let input = matches.get_one::<String>("input").expect("Input .yaml file is required");
+    let output = matches.get_one::<String>("output").expect("Output .png file is required");
+    let verbose = matches.get_flag("verbose");
+
+    println!("Input file: {}", input);
+    println!("Output file: {}", output);
+    if verbose {
+        println!("Verbose mode is enabled");
     }
 
-    // Build the map
+    let tile: Tile = Tile::from_yaml(input)?;
 
-    if let Some(dimensions) = &args.dimensions {
-        let result: RgbaImage = generate_map_2d(&tile_paths, &cfg.adjacency_rules, args.length, args.length)?;
-        // Save the output
-        result.save(&args.out)?;
-        println!("Generated 1D map: {} tiles → {}", args.length, args.out.display());
-    } else {
-        let result: RgbaImage = generate_map_1d(&tile_paths, &cfg.adjacency_rules, args.length)?;
-        // Save the output
-        result.save(&args.out)?;
-        println!("Generated 1D map: {} tiles → {}", args.length, args.out.display());
-    }
+    println!("{:?}", tile);
+
+    generators::tile::generate_image(&tile)?;
 
     Ok(())
 }

@@ -1,0 +1,118 @@
+# EXAMPLE:
+
+sectors: # High-level sectors of the tile, these are in place to make sure progression is possible through the game
+         # These also tells the algorithm how to generate the neighoring tiles (so that the sectors match up kind of.)
+  - name: "Forground"
+    description: ""
+    weight: 100
+    dimensions:
+      width: 512
+      height: 200
+    origin:
+      x: 0
+      y: 0
+    areas: # Sub-areas within the sector, each with its own properties
+      empty:
+        - name: "Nothing"
+          weight: 45
+      crack:
+        - name: "Small"
+          weight: 25 # out of 100, the probability of the wave function to collapse to this state
+          dimensions:
+            width: 10
+            height: 5
+        - name: "Medium"
+          weight: 20
+          dimensions:
+            width: 20
+            height: 10
+        - name: "Large"
+          weight: 10
+          dimensions:
+            width: 30
+            height: 15
+      debris:
+        - name: "Small"
+          weight: 25
+          dimensions:
+            width: 5
+            height: 5
+        - name: "Medium"
+          weight: 10
+          dimensions:
+            width: 15
+            height: 10
+        - name: "Large"
+          weight: 5
+          dimensions:
+            width: 25
+            height: 15
+
+  - name: "Middleground"
+    description: ""
+    weight: 100
+    dimensions:
+      width: 512
+      height: 200
+    origin:
+      x: 0
+      y: 0
+    areas:
+      empty:
+        - name: "Nothing"
+          weight: 45
+      crack:
+        - name: "Small"
+          weight: 25 # out of 100, the probability of the wave function to collapse to this state
+          dimensions:
+            width: 10
+            height: 5
+        - name: "Medium"
+          weight: 20
+          dimensions:
+            width: 20
+            height: 10
+        - name: "Large"
+          weight: 10
+          dimensions:
+            width: 30
+            height: 15
+      debris:
+        - name: "Small"
+          weight: 25
+          dimensions:
+            width: 5
+            height: 5
+        - name: "Medium"
+          weight: 10
+          dimensions:
+            width: 15
+            height: 10
+        - name: "Large"
+          weight: 5
+          dimensions:
+            width: 25
+            height: 15
+
+  - name: "Background"
+    description: ""
+    weight: 100
+    dimensions:
+      width: 512
+      height: 50
+    origin:
+      x: 0
+      y: 0
+    areas:
+      wall:
+        - name: "Small"
+          weight: 60
+          dimensions:
+            width: 10
+            height: 10
+        - name: "Tall"
+          weight: 60
+          dimensions:
+            width: 20
+            height: 20
+      

@@ -3,3 +3,9 @@ adjacency_rules:
   ground: ["ground", "roof", "wall"]
   roof:   ["ground", "roof", "wall"]
   wall:   ["ground", "roof", "wall"]
+
+tiles:
+  ground: "example/tiles/ground.png"
+  roof:   "example/tiles/roof.png"
+  wall:   "example/tiles/wall.png"
+  

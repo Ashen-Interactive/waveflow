@@ -1,0 +1,16 @@
+name: "Street Tile"
+path: "street.png"
+description: "A tile representing a street with various features in different sectors."
+color_code: "#808080"
+dimensions: [512, 512]
+
+sectors:
+  - path: "./sectors/foreground.yaml"
+    dimensions: [512, 200]
+    origin: [0, 0]
+  - path: "./sectors/middleground.yaml"
+    dimensions: [512, 100]
+    origin: [0, 200]
+  - path: "./sectors/background.yaml"
+    dimensions: [512, 212]
+    origin: [0, 300]
